@@ -26,8 +26,9 @@ namespace Core.Entities
         [Required]
         [HiddenInput]
         public UserRole Role { get; set; } = UserRole.User;
-
-
+    
+        // --- Relationships ---
+        public List<Document> Decuments {get; set;} = new();
 
         //public void ChangePassword(string oldPassword, string newPassword)
         //    => this.Password = newPassword;
