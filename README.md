@@ -21,6 +21,96 @@ Każdy dokument zawiera metadane opisujące treść dokumentu: np. tytuł, typ p
 
 - Każdy z użytkowników zarejestrowanych może dostać listę dokumentów, które sam wprowadził do systemu.
 
+```mermaid
+classDiagram
+  class EntityBase {
+    <<Abstract>>
+    +Id : long
+    +CreationDate : DateTime
+  }
+
+  class User {
+    +Login : string
+    +Password : string
+    +Role : UserRole
+  }
+
+  class Document {
+    +Title : string
+    +Description : string
+    +Author : string
+    +DocumentType : DocumentAccessStatus
+    +Path : string
+  }
+
+  class AuthenticationService {
+    +Login(username: string, password: string): string
+    +Register(username: string, password: string): void
+    +Logout(): void
+  }
+
+  class AuthorizationService {
+    +IsUserAuthorized(user: User, document: Document): bool
+    +IsAdmin(user: User): bool
+  }
+
+  class AuditService {
+    +LogAction(user: User, action: string, document: Document): void
+  }
+
+  class HashingService {
+    +HashPassword(password: string): string
+    +VerifyPassword(password: string, hashedPassword: string): bool
+  }
+
+  class UserRepository {
+    +GetUserById(id: long): User
+    +GetUserByLogin(login: string): User
+    +AddUser(user: User): void
+    +UpdateUser(user: User): void
+    +DeleteUser(user: User): void
+  }
+
+  class DocumentRepository {
+    +GetDocumentById(id: long): Document
+    +GetDocumentsByAuthor(author: string): List<Document>
+    +AddDocument(document: Document): void
+    +UpdateDocument(document: Document): void
+    +DeleteDocument(document: Document): void
+  }
+
+  class DocumentAccessStatus {
+    «enumeration»
+    Public,
+    Private,
+    Confidential
+  }
+
+  class UserRole {
+    «enumeration»
+    User,
+    Admin
+  }
+
+  EntityBase <|-- User
+  EntityBase <|-- Document
+
+  User -- "1" UserRole : has
+  Document -- "1" DocumentAccessStatus : has
+
+  AuthenticationService -- "1" UserRepository : uses
+  AuthenticationService -- "1" HashingService : uses
+
+  AuthorizationService -- "1" UserRepository : uses
+  AuthorizationService -- "1" DocumentRepository : uses
+
+  AuditService -- "1" UserRepository : uses
+  AuditService -- "1" DocumentRepository : uses
+
+  UserRepository --|> EntityBase
+  DocumentRepository --|> EntityBase
+
+```
 #
 Dodatkowe funkcje ponoszące ocenę z projektu: Pobieranie skompresowanej paczki dokumentów np. aplikacja korzysta z serwisu gRCP, który wykonuje kompresję plików, umieszcza plik wynikowy na serwerze i zwraca link do archiwum.  
 
