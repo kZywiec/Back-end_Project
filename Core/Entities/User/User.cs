@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Core.Entities.Document;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -53,7 +52,7 @@ namespace Core.Entities.User
         /// <summary>
         /// Zwraca listę dokumentów, które użytkownik dodał do systemu.
         /// </summary>
-        public List<Document> GetOwnedDocuments()
+        public List<Document.Document> GetOwnedDocuments()
         {
             throw new NotImplementedException();
         }
