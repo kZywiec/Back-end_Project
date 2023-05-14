@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace Core.Entities
+namespace Core.Entities.Document
 {
-    public enum DocumentStatus
+    public enum DocumentAccessStatus
     {
         [Description("Any user, including unregistered users, can search for and download the document.")]
         Public,

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.Entities
+namespace Core.Entities.User
 {
     public enum UserRole
     {
