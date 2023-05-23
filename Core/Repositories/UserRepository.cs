@@ -1,4 +1,5 @@
-﻿using Core.Entities.User;
+﻿using Core.Data;
+using Core.Entities.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,14 @@ namespace Core.Repositories
 {
     public class UserRepository
     {
+
+        private readonly ProjectContext _context;
+
+        public UserRepository(ProjectContext context)
+        {
+            _context = context;
+        }
+
         /// <summary>
         /// Pobiera użytkownika na podstawie jego identyfikatora.
         /// </summary>
@@ -16,7 +25,7 @@ namespace Core.Repositories
         /// <returns>Użytkownik.</returns>
         public User GetUserById(long userId)
         {
-            throw new NotImplementedException();
+            return _context.Users.Find(userId);
         }
 
         /// <summary>
@@ -26,7 +35,7 @@ namespace Core.Repositories
         /// <returns>Użytkownik.</returns>
         public User GetUserByUsername(string username)
         {
-            throw new NotImplementedException();
+            return _context.Users.FirstOrDefault(u => u.Username == username);
         }
 
         /// <summary>
@@ -36,7 +45,8 @@ namespace Core.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public void AddUser(User user) 
         {
-            throw new NotImplementedException();
+            _context.Users.Add(user);
+            _context.SaveChanges();
         }
 
         /// <summary>
@@ -45,7 +55,15 @@ namespace Core.Repositories
         /// <param name="user">Użytkownik do zapisania.</param>
         public void SaveUser(User user)
         {
-            throw new NotImplementedException();
+            User existingUser = _context.Users.Find(user.Id);
+
+            if(existingUser != null) 
+            {
+                existingUser.Username = user.Username; 
+                existingUser.Password = user.Password;
+                existingUser.Role = user.Role;
+                _context.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -54,7 +72,8 @@ namespace Core.Repositories
         /// <param name="user">Użytkownik do usunięcia.</param>
         public void DeleteUser(User user)
         {
-            throw new NotImplementedException();
+            _context.Users.Remove(user);
+            _context.SaveChanges();
         }
     }
 }

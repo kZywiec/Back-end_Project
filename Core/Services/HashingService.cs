@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,9 +18,20 @@ namespace Core.Services
         /// <exception cref="NotImplementedException"></exception>
         public string HashPassword(string password)
         {
-            // TODO: Implementacja funkcji haszującej hasło
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+                byte[] hashBytes = sha256.ComputeHash(passwordBytes);
 
-            throw new NotImplementedException();
+                string result = "";
+
+                foreach(byte b in hashBytes)
+                {
+                    result += b.ToString("X2");
+                }
+
+                return result;  
+            }
         }
 
 
@@ -31,10 +43,9 @@ namespace Core.Services
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         public bool VerifyPassword(string password, string hashedPassword)
-        {
-            // TODO: Implementacja funkcji weryfikującej hasło
-
-            throw new NotImplementedException();
+        {    
+            string hashedToVerify = HashPassword(password);
+            return hashedToVerify == hashedPassword;
         }
     }
 }

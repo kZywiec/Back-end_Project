@@ -1,11 +1,21 @@
-﻿using Core.Entities.Document;
+﻿using Core.Data;
+using Core.Entities.Document;
 using Core.Entities.User;
+using Microsoft.VisualBasic.FileIO;
 using System.Security.Cryptography;
 
 namespace Core.Repositories
 {
     public class DocumentRepository
     {
+        private readonly ProjectContext _context;
+
+        public DocumentRepository(ProjectContext context)
+        {
+            _context = context;
+        }
+
+
         /// <summary>
         /// Dodaje nowy dokument do systemu.
         /// </summary>
@@ -13,7 +23,8 @@ namespace Core.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public void AddDocument(Document document)
         {
-            throw new NotImplementedException();
+            _context.Documents.Add(document);
+            _context.SaveChanges();
         }
 
 
@@ -24,7 +35,7 @@ namespace Core.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public List<Document> GetPublicDocuments()
         {
-            throw new NotImplementedException ();
+            return _context.Documents.Where(d => d.AccessStatus == DocumentAccessStatus.Public).ToList();
         }
 
 
@@ -36,7 +47,9 @@ namespace Core.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public List<Document>  GetAccessibleDocuments(User user)
         {
-            throw new NotImplementedException () ;
+           return _context.Documents
+                .Where(d => d.AccessStatus == DocumentAccessStatus.Public 
+                || d.Uploader.Id == user.Id).ToList();
         }
 
 
@@ -48,7 +61,7 @@ namespace Core.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public Document GetDocumentById(long documentId)
         {
-            throw new NotImplementedException() ;
+            return _context.Documents.Find(documentId);
         }
 
 
@@ -59,7 +72,20 @@ namespace Core.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public void UpdateDocument(Document document)
         {
-            throw new NotImplementedException();
+            var existingDoc = _context.Documents.Find(document.Id);
+
+            if (existingDoc != null)
+            {
+                existingDoc.Title = document.Title;
+                existingDoc.FileType = document.FileType;
+                existingDoc.Description = document.Description;
+                existingDoc.CreationDate = document.CreationDate;
+                existingDoc.Uploader = document.Uploader;
+                existingDoc.AccessStatus = document.AccessStatus;
+                existingDoc.FilePath = document.FilePath;
+
+                _context.SaveChanges();
+            }
         }
 
 
@@ -70,7 +96,8 @@ namespace Core.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public void DeleteDocument(Document document)
         {
-            throw new NotImplementedException();
+            _context.Documents.Remove(document);
+            _context.SaveChanges();
         }
     }
 }
