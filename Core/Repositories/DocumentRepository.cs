@@ -1,8 +1,6 @@
 ﻿using Core.Data;
-using Core.Entities.Document;
-using Core.Entities.User;
-using Microsoft.VisualBasic.FileIO;
-using System.Security.Cryptography;
+using Core.Entities.DocumentEntities;
+using Core.Entities.UserEntities;
 
 namespace Core.Repositories
 {
@@ -19,11 +17,11 @@ namespace Core.Repositories
         /// <summary>
         /// Dodaje nowy dokument do systemu.
         /// </summary>
-        /// <param name="document"></param>
+        /// <param name="Document"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void AddDocument(Document document)
+        public void AddDocument(Document Document)
         {
-            _context.Documents.Add(document);
+            _context.Documents.Add(Document);
             _context.SaveChanges();
         }
 
@@ -56,33 +54,33 @@ namespace Core.Repositories
         /// <summary>
         /// Zwraca dokument o określonym identyfikatorze.
         /// </summary>
-        /// <param name="documentId"></param>
+        /// <param name="DocumentId"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Document GetDocumentById(long documentId)
+        public Document GetDocumentById(long DocumentId)
         {
-            return _context.Documents.Find(documentId);
+            return _context.Documents.Find(DocumentId);
         }
 
 
         /// <summary>
         /// Aktualizuje dane dokumentu.
         /// </summary>
-        /// <param name="document"></param>
+        /// <param name="Document"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void UpdateDocument(Document document)
+        public void UpdateDocument(Document Document)
         {
-            var existingDoc = _context.Documents.Find(document.Id);
+            var existingDoc = _context.Documents.Find(Document.Id);
 
             if (existingDoc != null)
             {
-                existingDoc.Title = document.Title;
-                existingDoc.FileType = document.FileType;
-                existingDoc.Description = document.Description;
-                existingDoc.CreationDate = document.CreationDate;
-                existingDoc.Uploader = document.Uploader;
-                existingDoc.AccessStatus = document.AccessStatus;
-                existingDoc.FilePath = document.FilePath;
+                existingDoc.Title = Document.Title;
+                existingDoc.FileType = Document.FileType;
+                existingDoc.Description = Document.Description;
+                existingDoc.CreationDate = Document.CreationDate;
+                existingDoc.Uploader = Document.Uploader;
+                existingDoc.AccessStatus = Document.AccessStatus;
+                existingDoc.FilePath = Document.FilePath;
 
                 _context.SaveChanges();
             }
@@ -92,11 +90,11 @@ namespace Core.Repositories
         /// <summary>
         /// Usuwa dokument z systemu.
         /// </summary>
-        /// <param name="document"></param>
+        /// <param name="Document"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void DeleteDocument(Document document)
+        public void DeleteDocument(Document Document)
         {
-            _context.Documents.Remove(document);
+            _context.Documents.Remove(Document);
             _context.SaveChanges();
         }
     }

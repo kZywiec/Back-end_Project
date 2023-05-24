@@ -1,5 +1,5 @@
-﻿using Core.Entities.Document;
-using Core.Entities.User;
+﻿using Core.Entities.DocumentEntities;
+using Core.Entities.UserEntities;
 using Core.Repositories;
 using System;
 using System.Collections.Generic;
@@ -22,9 +22,9 @@ namespace Core.Services
         /// Sprawdza, czy użytkownik ma uprawnienia do dostępu do danego dokumentu.
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="document"></param>
+        /// <param name="Document"></param>
         /// <returns></returns>
-        public bool IsUserAuthorized(User user, Document document)
+        public bool IsUserAuthorized(User user, Document Document)
         {
             throw new NotImplementedException();
         }

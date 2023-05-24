@@ -1,5 +1,5 @@
-﻿using Core.Entities.Document;
-using Core.Entities.User;
+﻿using Core.Entities.DocumentEntities;
+using Core.Entities.UserEntities;
 
 namespace Core.Services
 {
@@ -10,9 +10,9 @@ namespace Core.Services
         /// Rejestruje operację wykonaną na dokumencie przez użytkownika.
         /// </summary>
         /// <param name="user"></param>
-        /// <param name="document"></param>
+        /// <param name="Document"></param>
         /// <param name="action"></param>
-        public void LogDocumentAction(User user, Document document, string action)
+        public void LogDocumentAction(User user, Document Document, string action)
         {
             throw new NotImplementedException();
         }
@@ -21,9 +21,9 @@ namespace Core.Services
         /// <summary>
         /// Zwraca historię operacji wykonanych na dokumencie.
         /// </summary>
-        /// <param name="document"></param>
-        /// <returns> List<string> documentHistory </returns>
-        public List<string> GetDocumentHistory(Document document)
+        /// <param name="Document"></param>
+        /// <returns> List<string> DocumentHistory </returns>
+        public List<string> GetDocumentHistory(Document Document)
         {
             throw new NotImplementedException();
         }

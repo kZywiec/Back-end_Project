@@ -1,11 +1,7 @@
-﻿using Core.Entities.Document;
-using Core.Entities.User;
+﻿using Core.Entities.DocumentEntities;
+using Core.Entities.LogEntities;
+using Core.Entities.UserEntities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Data
 {
@@ -13,6 +9,7 @@ namespace Core.Data
     {
         public DbSet<Document> Documents { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Log> Logs { get; set; }
 
         public ProjectContext(DbContextOptions<ProjectContext> options) : base(options)
         {

@@ -1,8 +1,8 @@
-﻿using Core.Entities.Document;
+﻿using Core.Entities.DocumentEntities;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
-namespace Core.Entities.User
+namespace Core.Entities.UserEntities
 {
     public class User : EntityBase
     {
@@ -52,7 +52,7 @@ namespace Core.Entities.User
         /// <summary>
         /// Zwraca listę dokumentów, które użytkownik dodał do systemu.
         /// </summary>
-        public List<Document.Document> GetOwnedDocuments()
+        public List<Document> GetOwnedDocuments()
         {
             throw new NotImplementedException();
         }

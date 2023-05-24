@@ -1,9 +1,5 @@
 ﻿using Core.Data;
-using Core.Entities.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Core.Entities.UserEntities;
 using System.Threading.Tasks;
 
 namespace Core.Repositories

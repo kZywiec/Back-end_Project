@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
-using Core.Entities.User;
+using Core.Entities.UserEntities;
 
-namespace Core.Entities.Document
+namespace Core.Entities.DocumentEntities
 {
     public class Document : EntityBase
     {

@@ -1,4 +1,4 @@
-﻿using Core.Entities.User;
+﻿using Core.Entities.UserEntities;
 using Core.Repositories;
 
 namespace Core.Services

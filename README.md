@@ -35,12 +35,41 @@ classDiagram
     +Role : UserRole
   }
 
+    class UserRole {
+    «enumeration»
+    User,
+    Admin
+  }
+
   class Document {
     +Title : string
     +Description : string
     +Author : string
     +DocumentType : DocumentAccessStatus
     +Path : string
+  }
+
+    class DocumentAccessStatus {
+    «enumeration»
+    Public,
+    Private,
+    Confidential
+  }
+
+  class Log {
+    +Id : long
+    +CreationDate : DateTime
+    +LogType : ActionLog
+    +Author : User
+    +Document : Document
+  }
+
+class ProjectContext {
+    +Documents : DbSet<Document>
+    +Users : DbSet<User>
+    +Logs : DbSet<Log>
+    +ProjectContext(options: DbContextOptions<ProjectContext>)
+    +OnConfiguring(optionsBuilder: DbContextOptionsBuilder)
   }
 
   class AuthenticationService {
@@ -79,43 +108,70 @@ classDiagram
     +DeleteDocument(document: Document): void
   }
 
-  class DocumentAccessStatus {
-    «enumeration»
-    Public,
-    Private,
-    Confidential
+  class LogRepository {
+    +GetLogById(logId: long): Log
+    +AddLog(log: Log): void
+    +UpdateLog(log: Log): void
+    +DeleteLog(log: Log): void
   }
 
-  class UserRole {
+  class LogService {
+    -_logRepository: LogRepository
+    +CreateLog(logType: ActionLog, author: User, document: Document): Log
+    +UpdateLog(log: Log): void
+    +DeleteLog(log: Log): void
+  }
+  class ActionLog  {
     «enumeration»
-    User,
-    Admin
+    Upload,
+    Edit,
+    Download
   }
 
   EntityBase <|-- User
   EntityBase <|-- Document
+  EntityBase <|-- Log
 
-  User -- "1" UserRole : has
-  Document -- "1" DocumentAccessStatus : has
+  User --o UserRole
 
-  AuthenticationService -- "1" UserRepository : uses
-  AuthenticationService -- "1" HashingService : uses
+  Document --o DocumentAccessStatus
+  Document --o User
 
-  AuthorizationService -- "1" UserRepository : uses
-  AuthorizationService -- "1" DocumentRepository : uses
+  Log --o ActionLog
+  Log --o Document
+ 
+  AuthenticationService --* UserRepository : uses
+  AuthenticationService --* HashingService : uses
 
-  AuditService -- "1" UserRepository : uses
-  AuditService -- "1" DocumentRepository : uses
+  AuthorizationService --* UserRepository : uses
+  AuthorizationService --* DocumentRepository : uses
+
+  AuditService --*  UserRepository : uses
+  AuditService --*  DocumentRepository : uses
+
+  LogService --|> LogRepository : uses
+  LogService --|> UserRepository  : uses
+  LogService --|> DocumentRepository : uses
 
   UserRepository --|> EntityBase
   DocumentRepository --|> EntityBase
+  LogRepository --|> EntityBase
+
+  ProjectContext o--> Document
+  ProjectContext o--> User
+  ProjectContext o--> Log
 
 ```
 #
 Dodatkowe funkcje ponoszące ocenę z projektu: Pobieranie skompresowanej paczki dokumentów np. aplikacja korzysta z serwisu gRCP, który wykonuje kompresję plików, umieszcza plik wynikowy na serwerze i zwraca link do archiwum.  
 
+# Technologie użyte w projekcie
+- [Microsoft.AspNet.Mvc](https://www.nuget.org/packages/Microsoft.AspNet.Mvc/5.2.9?_src=template)
+- [Microsoft.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore/7.0.5?_src=template)
+- [Microsoft.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer)
+
 # Autorzy
 - [Krystian Żywiec **kZywiec**](https://github.com/kZywiec)
-- [Mieszko Przybyła]()
+- [Mieszko Przybyła **emzetp**](https://github.com/https://github.com/emzetp)
 - [Krzysztof Tybinka](https://github.com/KrzysztofTybinka)
-- [Krzysztof Nowakowski]()
+- [Krzysztof Nowakowski **knowakowski78**](https://github.com/knowakowski78)
