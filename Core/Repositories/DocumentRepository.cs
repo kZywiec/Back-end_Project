@@ -1,5 +1,6 @@
 ﻿using Core.Data;
 using Core.Entities.DocumentEntities;
+using Core.Entities.LogEntities;
 using Core.Entities.UserEntities;
 
 namespace Core.Repositories
@@ -7,10 +8,12 @@ namespace Core.Repositories
     public class DocumentRepository
     {
         private readonly ProjectContext _context;
+        private readonly LogRepository _logRepository;
 
-        public DocumentRepository(ProjectContext context)
+        public DocumentRepository(ProjectContext context, LogRepository logRepository)
         {
             _context = context;
+            _logRepository = logRepository;
         }
 
 
@@ -22,6 +25,13 @@ namespace Core.Repositories
         public void AddDocument(Document Document)
         {
             _context.Documents.Add(Document);
+
+            Log log = new Log();
+            log.Author = Document.Uploader;
+            log.Document = Document;
+            log.LogType = ActionLog.Upload;
+            _logRepository.AddLogAsync(log).GetAwaiter().GetResult();
+
             _context.SaveChanges();
         }
 
@@ -47,7 +57,7 @@ namespace Core.Repositories
         {
            return _context.Documents
                 .Where(d => d.AccessStatus == DocumentAccessStatus.Public 
-                || d.Uploader.Id == user.Id).ToList();
+                || d.Uploader.Id == user.Id || user.Role == UserRole.Admin).ToList();
         }
 
 
@@ -82,6 +92,12 @@ namespace Core.Repositories
                 existingDoc.AccessStatus = Document.AccessStatus;
                 existingDoc.FilePath = Document.FilePath;
 
+                Log log = new Log();
+                log.Author = Document.Uploader;
+                log.Document = Document;
+                log.LogType = ActionLog.Edit;
+                _logRepository.AddLogAsync(log).GetAwaiter().GetResult();
+
                 _context.SaveChanges();
             }
         }
@@ -94,6 +110,12 @@ namespace Core.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public void DeleteDocument(Document Document)
         {
+            Log log = new Log();
+            log.Author = Document.Uploader;
+            log.Document = Document;
+            log.LogType = ActionLog.Edit;
+            _logRepository.AddLogAsync(log).GetAwaiter().GetResult();
+
             _context.Documents.Remove(Document);
             _context.SaveChanges();
         }

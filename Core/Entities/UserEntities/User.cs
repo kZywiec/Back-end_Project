@@ -1,4 +1,5 @@
 ﻿using Core.Entities.DocumentEntities;
+using Core.Repositories;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -48,13 +49,18 @@ namespace Core.Entities.UserEntities
         [HiddenInput]
         public UserRole Role { get; set; } = UserRole.User;
 
+        /// <summary>
+        /// Lista dokumentów
+        /// </summary>
+        public List<Document> Documents { get; set; }
+
 
         /// <summary>
         /// Zwraca listę dokumentów, które użytkownik dodał do systemu.
         /// </summary>
         public List<Document> GetOwnedDocuments()
         {
-            throw new NotImplementedException();
+            return Documents;
         }
     }
 }
