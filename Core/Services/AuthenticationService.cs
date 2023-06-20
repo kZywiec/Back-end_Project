@@ -21,9 +21,23 @@ namespace Core.Services
         /// </summary>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        void Register(string username, string password)
+        public void Register(string username, string password)
         {
-            throw new NotImplementedException();
+            if (_userRepository.Exists(username))
+            {
+                throw new Exception("Użytkownik o podanej nazwie już istnieje.");
+            }
+            
+            var hashedPassword = _hashingService.HashPassword(password);
+           
+            var user = new User
+            {
+                Username = username,
+                Password = hashedPassword,
+                Role = UserRole User
+            };
+
+            _userRepository.AddUser(user);
         }
 
         /// <summary>
@@ -34,7 +48,28 @@ namespace Core.Services
         /// <returns></returns>
         User Login(string username, string password)
         {
-            throw new NotImplementedException();
+            var user = _userRepository.GetByUsername(username);
+
+            if (user == null)
+            {
+                throw new Exception("Nieprawidłowa nazwa użytkownika lub hasło.");
+            }
+
+            var isPasswordValid = _hashingService.VerifyPassword(password, user.Password);
+
+            if (!isPasswordValid)
+            {
+                throw new Exception("Nieprawidłowa nazwa użytkownika lub hasło.");
+            }
+
+            var token = _tokenService.GenerateToken(user.UserId);
+
+            return new UserWithToken
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Token = token
+            };
         }
     }
 }

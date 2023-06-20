@@ -26,7 +26,23 @@ namespace Core.Services
         /// <returns></returns>
         public bool IsUserAuthorized(User user, Document Document)
         {
-            throw new NotImplementedException();
+            if(user == null || document == null)
+                return false;
+
+            if(IsAdmin(user))
+                return true;
+
+            if (Document.AccessStatus.Contains("Public"))
+                return true;
+
+            if(Document.AccessStatus.Contains("Private") && user.Role.Contains("User"))
+                return true;
+
+            if (Document.AccessStatus.Contains("Confidential") && user.Documents.Contains(Document))
+                return true;
+
+            return false;
+
         }
 
 
@@ -37,7 +53,8 @@ namespace Core.Services
         /// <returns></returns>
         public bool IsAdmin(User user) 
         { 
-            throw new NotImplementedException();
+            if(user == null) return false;
+            return user.Role.Contains("Admin")
         }
     }
 }
