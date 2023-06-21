@@ -11,17 +11,18 @@ namespace Core.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Log> Logs { get; set; }
 
-        public ProjectContext(DbContextOptions<ProjectContext> options) : base(options)
-        {
-            Database.EnsureCreated();
-        }
+        public ProjectContext(DbContextOptions<ProjectContext> options)
+            : base(options) { }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=DocumentsDb;Trusted_Connection=True;");
-            }
+            modelBuilder.Entity<Log>()
+               .HasOne(l => l.Author)
+               .WithMany()
+               .HasForeignKey(l => l.Id)
+               .OnDelete(DeleteBehavior.NoAction);
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

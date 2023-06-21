@@ -7,17 +7,22 @@ namespace Core.Services
 {
     public class AuditService
     {
-        LogRepository logRepository;
+        private readonly LogRepository logRepository;
+
+        public AuditService(LogRepository logRepository)
+        {
+            this.logRepository = logRepository;
+        }
+
         /// <summary>
         /// Rejestruje operację wykonaną na dokumencie przez użytkownika.
         /// </summary>
         /// <param name="user"></param>
         /// <param name="Document"></param>
         /// <param name="action"></param>
-        public void LogDocumentAction(User user, Document Document, string action)
+        public void LogDocumentAction(User user, Document document, ActionLog actionLog)
         {
-            var actionLog = ActionLog(action);
-            var logEntry = new Log(actionLog, user, document);
+            Log logEntry = new Log(actionLog, user, document);
 
             logRepository.AddLogAsync(logEntry);
         }
@@ -27,11 +32,10 @@ namespace Core.Services
         /// Zwraca historię operacji wykonanych na dokumencie.
         /// </summary>
         /// <param name="Document"></param>
-        /// <returns> List<string> DocumentHistory </returns>
-        public List<string> GetDocumentHistory(Document Document)
+        /// <returns> List<Log> DocumentHistory </returns>
+        public List<Log> GetDocumentHistory(Document Document)
         {
-            var documentLogs = logRepository.GetLogsByDocumentAsync(Document);
-
+            List<Log> documentLogs = logRepository.GetLogsByDocumentAsync(Document).Result.ToList();
             return documentLogs;
         }
     }

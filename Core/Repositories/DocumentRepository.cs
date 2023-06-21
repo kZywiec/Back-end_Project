@@ -2,6 +2,11 @@
 using Core.Entities.DocumentEntities;
 using Core.Entities.LogEntities;
 using Core.Entities.UserEntities;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core.Repositories
 {
@@ -16,108 +21,99 @@ namespace Core.Repositories
             _logRepository = logRepository;
         }
 
-
         /// <summary>
-        /// Dodaje nowy dokument do systemu.
+        /// Adds a new document to the system.
         /// </summary>
-        /// <param name="Document"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void AddDocument(Document Document)
+        /// <param name="document">The document to add.</param>
+        public async Task AddDocumentAsync(Document document)
         {
-            _context.Documents.Add(Document);
+            _context.Documents.Add(document);
 
             Log log = new Log();
-            log.Author = Document.Uploader;
-            log.Document = Document;
+            log.Author = document.Uploader;
+            log.Document = document;
             log.LogType = ActionLog.Upload;
-            _logRepository.AddLogAsync(log).GetAwaiter().GetResult();
+            await _logRepository.AddLogAsync(log);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-
         /// <summary>
-        /// Zwraca listę publicznych dokumentów.
+        /// Returns a list of public documents.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public List<Document> GetPublicDocuments()
+        /// <returns>The list of public documents.</returns>
+        public async Task<List<Document>> GetPublicDocumentsAsync()
         {
-            return _context.Documents.Where(d => d.AccessStatus == DocumentAccessStatus.Public).ToList();
+            return await _context.Documents.Where(d => d.AccessStatus == DocumentAccessStatus.Public).ToListAsync();
         }
 
-
         /// <summary>
-        /// Zwraca listę dokumentów dostępnych dla danego użytkownika.
+        /// Returns a list of documents accessible to the given user.
         /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public List<Document>  GetAccessibleDocuments(User user)
+        /// <param name="user">The user.</param>
+        /// <returns>The list of accessible documents.</returns>
+        public async Task<List<Document>> GetAccessibleDocumentsAsync(User user)
         {
-           return _context.Documents
-                .Where(d => d.AccessStatus == DocumentAccessStatus.Public 
-                || d.Uploader.Id == user.Id || user.Role == UserRole.Admin).ToList();
+            return await _context.Documents
+                .Where(d => d.AccessStatus == DocumentAccessStatus.Public
+                            || d.Uploader.Id == user.Id
+                            || user.Role == UserRole.Admin)
+                .ToListAsync();
         }
 
-
         /// <summary>
-        /// Zwraca dokument o określonym identyfikatorze.
+        /// Retrieves a document by its ID.
         /// </summary>
-        /// <param name="DocumentId"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public Document GetDocumentById(long DocumentId)
+        /// <param name="documentId">The ID of the document.</param>
+        /// <returns>The retrieved document.</returns>
+        public async Task<Document> GetDocumentByIdAsync(long documentId)
         {
-            return _context.Documents.Find(DocumentId);
+            return await _context.Documents.FindAsync(documentId);
         }
 
-
         /// <summary>
-        /// Aktualizuje dane dokumentu.
+        /// Updates the data of a document.
         /// </summary>
-        /// <param name="Document"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void UpdateDocument(Document Document)
+        /// <param name="document">The document with updated data.</param>
+        public async Task UpdateDocumentAsync(Document document)
         {
-            var existingDoc = _context.Documents.Find(Document.Id);
+            var existingDoc = await _context.Documents.FindAsync(document.Id);
 
             if (existingDoc != null)
             {
-                existingDoc.Title = Document.Title;
-                existingDoc.FileType = Document.FileType;
-                existingDoc.Description = Document.Description;
-                existingDoc.CreationDate = Document.CreationDate;
-                existingDoc.Uploader = Document.Uploader;
-                existingDoc.AccessStatus = Document.AccessStatus;
-                existingDoc.FilePath = Document.FilePath;
+                existingDoc.Title = document.Title;
+                existingDoc.FileType = document.FileType;
+                existingDoc.Description = document.Description;
+                existingDoc.CreationDate = document.CreationDate;
+                existingDoc.Uploader = document.Uploader;
+                existingDoc.AccessStatus = document.AccessStatus;
+                existingDoc.FilePath = document.FilePath;
 
                 Log log = new Log();
-                log.Author = Document.Uploader;
-                log.Document = Document;
+                log.Author = document.Uploader;
+                log.Document = document;
                 log.LogType = ActionLog.Edit;
-                _logRepository.AddLogAsync(log).GetAwaiter().GetResult();
+                await _logRepository.AddLogAsync(log);
 
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-
         /// <summary>
-        /// Usuwa dokument z systemu.
+        /// Deletes a document from the system.
         /// </summary>
-        /// <param name="Document"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public void DeleteDocument(Document Document)
+        /// <param name="document">The document to delete.</param>
+        public async Task DeleteDocumentAsync(Document document)
         {
             Log log = new Log();
-            log.Author = Document.Uploader;
-            log.Document = Document;
-            log.LogType = ActionLog.Edit;
-            _logRepository.AddLogAsync(log).GetAwaiter().GetResult();
+            log.Author = document.Uploader;
 
-            _context.Documents.Remove(Document);
-            _context.SaveChanges();
+            log.Document = document;
+            log.LogType = ActionLog.Edit;
+            await _logRepository.AddLogAsync(log);
+
+            _context.Documents.Remove(document);
+            await _context.SaveChangesAsync();
         }
     }
 }

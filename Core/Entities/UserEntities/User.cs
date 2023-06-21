@@ -52,7 +52,7 @@ namespace Core.Entities.UserEntities
         /// <summary>
         /// Lista dokumentów
         /// </summary>
-        public List<Document> Documents { get; set; }
+        public List<Document> Documents { get; set; } = new(new List<Document>());
 
 
         /// <summary>

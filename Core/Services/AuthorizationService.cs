@@ -26,19 +26,19 @@ namespace Core.Services
         /// <returns></returns>
         public bool IsUserAuthorized(User user, Document Document)
         {
-            if(user == null || document == null)
+            if(user == null || Document == null)
                 return false;
 
             if(IsAdmin(user))
                 return true;
 
-            if (Document.AccessStatus.Contains("Public"))
+            if (Document.AccessStatus == DocumentAccessStatus.Public)
                 return true;
 
-            if(Document.AccessStatus.Contains("Private") && user.Role.Contains("User"))
+            if(Document.AccessStatus == DocumentAccessStatus.Private && user.Role== UserRole.User)
                 return true;
 
-            if (Document.AccessStatus.Contains("Confidential") && user.Documents.Contains(Document))
+            if (Document.AccessStatus == DocumentAccessStatus.Confidential && user.Documents.Contains(Document))
                 return true;
 
             return false;
@@ -54,7 +54,7 @@ namespace Core.Services
         public bool IsAdmin(User user) 
         { 
             if(user == null) return false;
-            return user.Role.Contains("Admin")
+            return user.Role ==UserRole.Admin;
         }
     }
 }

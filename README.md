@@ -173,5 +173,4 @@ Dodatkowe funkcje ponoszące ocenę z projektu: Pobieranie skompresowanej paczki
 # Autorzy
 - [Krystian Żywiec **kZywiec**](https://github.com/kZywiec)
 - [Mieszko Przybyła **emzetp**](https://github.com/https://github.com/emzetp)
-- [Krzysztof Tybinka](https://github.com/KrzysztofTybinka)
 - [Krzysztof Nowakowski **knowakowski78**](https://github.com/knowakowski78)

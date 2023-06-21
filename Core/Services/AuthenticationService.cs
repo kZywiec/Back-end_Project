@@ -23,21 +23,21 @@ namespace Core.Services
         /// <param name="password"></param>
         public void Register(string username, string password)
         {
-            if (_userRepository.Exists(username))
+            if (_userRepository.GetUserByUsernameAsync(username) != null)
             {
                 throw new Exception("Użytkownik o podanej nazwie już istnieje.");
             }
             
             var hashedPassword = _hashingService.HashPassword(password);
-           
+
             var user = new User
             {
                 Username = username,
                 Password = hashedPassword,
-                Role = UserRole User
+                Role = UserRole.User
             };
 
-            _userRepository.AddUser(user);
+            _userRepository.AddUserAsync(user);
         }
 
         /// <summary>
@@ -46,15 +46,16 @@ namespace Core.Services
         /// <param name="username"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        User Login(string username, string password)
+        public User Login(string username, string password)
         {
-            var user = _userRepository.GetByUsername(username);
+            User user = _userRepository.GetUserByUsernameAsync(username).Result;
 
             if (user == null)
             {
                 throw new Exception("Nieprawidłowa nazwa użytkownika lub hasło.");
             }
 
+            
             var isPasswordValid = _hashingService.VerifyPassword(password, user.Password);
 
             if (!isPasswordValid)
@@ -62,14 +63,15 @@ namespace Core.Services
                 throw new Exception("Nieprawidłowa nazwa użytkownika lub hasło.");
             }
 
-            var token = _tokenService.GenerateToken(user.UserId);
+            var token = _tokenService.GenerateToken(user.Id);
 
-            return new UserWithToken
-            {
-                UserId = user.UserId,
-                Username = user.Username,
-                Token = token
-            };
+            return user;
+            //WithToken
+            //{
+            //    UserId = user.Id,
+            //    Username = user.Username,
+            //    Token = token
+            //};
         }
     }
 }

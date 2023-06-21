@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Core.Services
 {
@@ -18,11 +18,10 @@ namespace Core.Services
         }
 
         /// <summary>
-        /// Generuje token JWT (JSON Web Token) 
+        /// Generates a JWT (JSON Web Token) for the specified user ID.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <param name="userId">User ID.</param>
+        /// <returns>Generated token.</returns>
         public string GenerateToken(long userId)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -30,7 +29,10 @@ namespace Core.Services
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] { new Claim("userId", userId.ToString()) }),
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+                }),
                 Expires = DateTime.UtcNow.Add(_expirationTime),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -39,33 +41,30 @@ namespace Core.Services
             return tokenHandler.WriteToken(token);
         }
 
-
         /// <summary>
-        /// Weryfikacuje token JWT (JSON Web Token)
+        /// Validates the specified JWT (JSON Web Token).
         /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <param name="token">Token to validate.</param>
+        /// <returns>True if the token is valid; otherwise, false.</returns>
         public bool ValidateToken(string token)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_secretKey);
-
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero
-            };
-
             try
             {
-                tokenHandler.ValidateToken(token, validationParameters, out _);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_secretKey);
+
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out var validatedToken);
+
                 return true;
             }
-            catch (Exception)
+            catch
             {
                 return false;
             }
