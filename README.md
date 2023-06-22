@@ -10,7 +10,7 @@ Każdy dokument zawiera metadane opisujące treść dokumentu: np. tytuł, typ p
 
 > **Poufny** – tylko użytkownicy o prawach typu Admin mogą wyszukiwać lub pobierać oraz ci, którzy ten dokument dodali do systemu.
 
-# Operacje
+# Operacje:
 - Zarchiwizowanie (dodanie) dokumentu z opisem – każdy użytkownik może dodać dokument do systemu, który ma status publiczny. Użytkownicy zarejestrowani mogą dodawać dokumenty o dowolnym statusie.
 
 - Odczyt i wyszukiwanie – użytkownicy niezarejestrowani mogą wyszukiwać i pobierać tylko dokumentu publiczne. Jeśli kryterium wyszukiwania pasuje do dokumentu niepublicznego to w wynikach wyszukiwanie nie powinien by ujawniany (użytkownik nie może nawet wiedzieć, że taki istnieje).
@@ -21,6 +21,31 @@ Każdy dokument zawiera metadane opisujące treść dokumentu: np. tytuł, typ p
 
 - Każdy z użytkowników zarejestrowanych może dostać listę dokumentów, które sam wprowadził do systemu.
 
+# Instrukcja uruchomienia:
+- Sklonuj repozytorum,
+- Otwórz rozwiązanie,
+- W projekcie WebAPI znajduje się plik appsetings.json zawierający właściwość domyślnej ścieżki połączenia z serwerem bazodanowym, upewnij się że ścieżka pokrywa się ze ścieżką serwera którego zamierzasz urzywać,
+- Skompiluj, aplikacja sama utworzy baze danych i wprowadzi wbudowane rekordy testowe.
+
+# Rekordy wbudowane
+- **Użytkownicy**
+    1. (Id:1) admin admin (Administrator)
+    2. (Id:2) user user (Zarajestrowany użytkownik)
+    3. (Id:3) user2 user2 (Zarajestrowany użytkownik)
+    4. (Id:4) guest guest (Niezarajestrowany użytkownik)
+ 
+- **Dokumenty**
+    Wszytkie dokumenty wprowadzone zostały przez użytkownika (Id:2) User
+    1. (Id:1) Public (Publiczny)
+    2. (Id:2) Private (Prywatny)
+    3. (Id:3) Confidential (Poufny)
+
+- **Logi**
+    1. (Id:1) Upload, Użytkownik (Id: 2), Dokument (Id: 1)
+    2. (Id:2) Upload, Użytkownik (Id: 2), Dokument (Id: 2)
+    3. (Id:3) Upload, Użytkownik (Id: 2), Dokument (Id: 3)
+     
+# Diagram:
 ```mermaid
 classDiagram
   class EntityBase {
@@ -93,26 +118,30 @@ class ProjectContext {
   }
 
   class UserRepository {
-    +GetUserById(id: long): User
-    +GetUserByLogin(login: string): User
-    +AddUser(user: User): void
-    +UpdateUser(user: User): void
-    +DeleteUser(user: User): void
+    +GetUserByIdAsync(id: long): User
+    +GetUserByLoginAsync(login: string): User
+    +AddUserAsync(user: User): void
+    +ChangeUserRoleAsync(userId: long, role: UserRole): void
+    +UpdateUserAsync(user: User): void
+    +DeleteUserAsync(user: User): void
   }
 
   class DocumentRepository {
-    +GetDocumentById(id: long): Document
-    +GetDocumentsByAuthor(author: string): List<Document>
-    +AddDocument(document: Document): void
-    +UpdateDocument(document: Document): void
-    +DeleteDocument(document: Document): void
+    +AddDocumentAsync(document: Document): void
+    +GetAllDocumentsAsync(): List<Document>
+    +GetDocumentByIdAsync(id: long): Document
+    +GetDocumentsByAuthorAsync(author: string): List<Document>
+    +ChangeDocumentAccessAsync(documentId: long, documentAccessStatus: DocumentAccessStatus): void
+    +UpdateDocumentAsync(document: Document): void
+    +DeleteDocumentAsync(document: Document): void
   }
 
   class LogRepository {
-    +GetLogById(logId: long): Log
-    +AddLog(log: Log): void
-    +UpdateLog(log: Log): void
-    +DeleteLog(log: Log): void
+    +GetAllAsync(): List<Log>
+    +GetLogByIdAsync(logId: long): Log
+    +AddLogAsync(log: Log): void
+    +UpdateLogAsync(log: Log): void
+    +DeleteLogAsync(log: Log): void
   }
 
   class LogService {
@@ -125,7 +154,8 @@ class ProjectContext {
     «enumeration»
     Upload,
     Edit,
-    Download
+    Download,
+    Delete
   }
 
   EntityBase <|-- User
@@ -162,13 +192,13 @@ class ProjectContext {
   ProjectContext o--> Log
 
 ```
-#
-Dodatkowe funkcje ponoszące ocenę z projektu: Pobieranie skompresowanej paczki dokumentów np. aplikacja korzysta z serwisu gRCP, który wykonuje kompresję plików, umieszcza plik wynikowy na serwerze i zwraca link do archiwum.  
-
-# Technologie użyte w projekcie
+# Technologie wukorzystane przy projekcie
 - [Microsoft.AspNet.Mvc](https://www.nuget.org/packages/Microsoft.AspNet.Mvc/5.2.9?_src=template)
 - [Microsoft.EntityFrameworkCore](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore/7.0.5?_src=template)
 - [Microsoft.EntityFrameworkCore.SqlServer](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer)
+- [Microsoft.AspNetCore.OpenApi](https://www.nuget.org/packages/Microsoft.AspNetCore.OpenApi/)
+- [Microsoft.EntityFrameworkCore.Tools](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Tools/8.0.0-preview.5.23280.1)
+- [Swashbuckle.AspNetCore](https://www.nuget.org/packages/Swashbuckle.AspNetCore)
 
 # Autorzy
 - [Krystian Żywiec **kZywiec**](https://github.com/kZywiec)

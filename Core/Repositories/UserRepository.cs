@@ -22,7 +22,7 @@ namespace Core.Repositories
         /// <returns>The retrieved user.</returns>
         public async Task<User> GetUserByIdAsync(long userId)
         {
-            return await _context.Users.FindAsync(userId);
+            return await _context.Users.FindAsync(userId); ;
         }
 
         /// <summary>

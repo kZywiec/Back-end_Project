@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
+using Document = Core.Entities.DocumentEntities.Document;
 
 namespace Core.Repositories
 {
@@ -39,12 +41,13 @@ namespace Core.Repositories
             if (logId <= 0)
                 throw new Exception("There is problem with Id, is less the 0.");
 
-            Log? _Log = await _context.Logs.FindAsync(logId);
+            var resoult = await _context.Logs.FindAsync(logId);
             
-            if (_Log != null)
-                return _Log;
-            else
-            throw new FileNotFoundException();
+            if (resoult == null)
+                throw new Exception("No Found");
+            resoult.Author = await _context.Users.Where(u => u.Id == resoult.AuthorId).FirstAsync();
+            resoult.Document = await _context.Documents.Where(d => d.Id == resoult.DocumentId).FirstAsync();
+            return resoult;
             
             
         }
@@ -72,7 +75,7 @@ namespace Core.Repositories
             if (document == null)
                 return Enumerable.Empty<Log>();
 
-            return await Task.FromResult(_context.Logs.Where(log => log.Document == document).ToList());
+            return await _context.Logs.Where(log => log.Document == document).ToListAsync();
         }
 
         /// <summary>

@@ -17,12 +17,12 @@ namespace Core.Services
         /// <summary>
         /// Rejestruje operację wykonaną na dokumencie przez użytkownika.
         /// </summary>
-        /// <param name="user"></param>
-        /// <param name="Document"></param>
+        /// <param name="userId"></param>
+        /// <param name="documentId"></param>
         /// <param name="action"></param>
-        public void LogDocumentAction(User user, Document document, ActionLog actionLog)
+        public void LogDocumentAction(long userId, long documentId, ActionLog actionLog)
         {
-            Log logEntry = new Log(actionLog, user, document);
+            Log logEntry = new Log(actionLog, userId, documentId);
 
             logRepository.AddLogAsync(logEntry);
         }

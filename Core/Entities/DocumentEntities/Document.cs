@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using Core.Entities.LogEntities;
 using Core.Entities.UserEntities;
@@ -7,14 +8,14 @@ namespace Core.Entities.DocumentEntities
 {
     public class Document : EntityBase
     {
-        public Document(string title, string fileType, string? description, long uploaderId, DocumentAccessStatus accessStatus, string filePath)
+        public Document(string title, string fileType, string? description, long uploaderId, DocumentAccessStatus accessStatus): base()
         {
             Title = title;
             FileType = fileType;
             Description = description;
             UploaderId = uploaderId;
             AccessStatus = accessStatus;
-            FilePath = filePath;
+            FilePath = @"C:\Users\Username\Documents\" + Id + title + "." + fileType;
         }
 
         /// <summary>

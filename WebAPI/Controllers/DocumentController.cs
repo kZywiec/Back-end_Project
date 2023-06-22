@@ -22,12 +22,20 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public async Task<IActionResult> AddDocument(string title, string filetype, string description, DocumentAccessStatus accessStatus,string filePath, long userId)
+        public async Task<IActionResult> AddDocument(string title, string filetype, string description, DocumentAccessStatus accessStatus, long userId)
         {
-            Document document = new(title,filetype,description,userId,accessStatus, filePath);
+            Document document = new(title,filetype,description,userId,accessStatus);
             document.Uploader = await _userRepository.GetUserByIdAsync(userId);
             await _documentRepository.AddDocumentAsync(document);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        public async Task<IActionResult> GetAllDocuments()
+        {
+            List<Document> Documents = await _documentRepository.GetAllDocumentsAsync();
+            return Ok(Documents);
         }
 
         [HttpGet]
@@ -57,6 +65,20 @@ namespace API.Controllers
                 return Ok(document);
             }
             return NotFound();
+        }
+
+        [HttpPut]
+        [Route("[action]")]
+        public async Task<IActionResult> ChangeDocumentAccess(long documentId, DocumentAccessStatus documentAccessStatus)
+        {
+            Document existingDocument = await _documentRepository.GetDocumentByIdAsync(documentId);
+            if (existingDocument == null)
+            {
+                return NotFound();
+            }
+            existingDocument.AccessStatus = documentAccessStatus;
+            await _documentRepository.UpdateDocumentAsync(existingDocument);
+            return Ok();
         }
 
         [HttpPut]

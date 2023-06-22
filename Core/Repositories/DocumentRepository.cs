@@ -31,13 +31,19 @@ namespace Core.Repositories
         {
             _context.Documents.Add(document);
 
-            Log log = new Log();
-            log.Author = document.Uploader;
-            log.Document = document;
-            log.LogType = ActionLog.Upload;
+            Log log = new Log(ActionLog.Upload, document.UploaderId, document.Id);
             await _logRepository.AddLogAsync(log);
 
             await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Returns a list of all documents.
+        /// </summary>
+        /// <returns>The list of all documents.</returns>
+        public async Task<List<Document>> GetAllDocumentsAsync()
+        {
+            return await _context.Documents.ToListAsync();
         }
 
         /// <summary>
@@ -54,15 +60,15 @@ namespace Core.Repositories
         /// </summary>
         /// <param name="user">The user.</param>
         /// <returns>The list of accessible documents.</returns>
-public async Task<List<Document>> GetAccessibleDocumentsAsync(User user)
-{
-    if (user.Role == UserRole.Admin)
-        return await _context.Documents.ToListAsync();
+        public async Task<List<Document>> GetAccessibleDocumentsAsync(User user)
+        {
+            if (user.Role == UserRole.Admin)
+                return await _context.Documents.ToListAsync();
 
-    return await _context.Documents
-        .Where(d => d.AccessStatus == DocumentAccessStatus.Public || d.Uploader.Id == user.Id)
-        .ToListAsync();
-}
+            return await _context.Documents
+                .Where(d => d.AccessStatus == DocumentAccessStatus.Public || d.Uploader.Id == user.Id)
+                .ToListAsync();
+        }
 
 
         /// <summary>
@@ -72,7 +78,12 @@ public async Task<List<Document>> GetAccessibleDocumentsAsync(User user)
         /// <returns>The retrieved document.</returns>
         public async Task<Document> GetDocumentByIdAsync(long documentId)
         {
-            return await _context.Documents.FindAsync(documentId);
+            var resoult = await _context.Documents.FindAsync(documentId);
+            if (resoult == null)
+                throw new Exception("No Found");
+            resoult.Uploader = await _context.Users.Where(u => u.Id == resoult.UploaderId).FirstAsync();
+            resoult.Logs.AddRange(await _context.Logs.Where(l => l.DocumentId == documentId).ToListAsync());
+            return resoult;
         }
 
         /// <summary>
@@ -93,12 +104,9 @@ public async Task<List<Document>> GetAccessibleDocumentsAsync(User user)
                 existingDoc.AccessStatus = document.AccessStatus;
                 existingDoc.FilePath = document.FilePath;
 
-                Log log = new Log();
-                log.Author = document.Uploader;
-                log.Document = document;
-                log.LogType = ActionLog.Edit;
-                await _logRepository.AddLogAsync(log);
+                Log log = new Log(ActionLog.Edit, document.UploaderId, document.Id);
 
+                await _logRepository.AddLogAsync(log);
                 await _context.SaveChangesAsync();
             }
         }
@@ -109,11 +117,7 @@ public async Task<List<Document>> GetAccessibleDocumentsAsync(User user)
         /// <param name="document">The document to delete.</param>
         public async Task DeleteDocumentAsync(Document document)
         {
-            Log log = new Log();
-            log.Author = await _userRepository.GetUserByIdAsync(document.UploaderId);
-
-            log.Document = document;
-            log.LogType = ActionLog.Edit;
+            Log log = new Log(ActionLog.Delete, document.UploaderId, document.Id);
             await _logRepository.AddLogAsync(log);
 
             _context.Documents.Remove(document);

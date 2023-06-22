@@ -9,11 +9,13 @@ namespace Core.Entities.LogEntities
 {
     public enum ActionLog
     {
-        [Description("Operation fo uplading file by user")]
+        [Description("Operation of uplading file by user")]
         Upload,
-        [Description("Operation fo file editing by user")]
+        [Description("Operation of editing file by user")]
         Edit,
-        [Description("Operation fo file downloading by user")]
-        Download
+        [Description("Operation of downloading file by user")]
+        Download,
+        [Description("Operation of deleteing file by user")]
+        Delete
     }
 }

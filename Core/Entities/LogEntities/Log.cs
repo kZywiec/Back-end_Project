@@ -5,12 +5,11 @@ namespace Core.Entities.LogEntities
 {
     public class Log : EntityBase
     {
-        public Log() : base() { }
-        public Log(ActionLog logType, User author, Document document) : base()
+        public Log(ActionLog logType, long authorId, long documentId) : base()
         {
             LogType = logType;
-            Author = author;
-            Document = document;
+            AuthorId = authorId;
+            DocumentId = documentId;
         }
 
         public ActionLog LogType { get; set; }

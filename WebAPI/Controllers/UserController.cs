@@ -47,6 +47,29 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("[action]")]
+        public async Task<IActionResult> ChangeUserRole(long userId, UserRole userRole)
+        {
+            try
+            {
+                User user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                user.Role = userRole;
+                await _userRepository.UpdateUserAsync(user);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error updating user: {ex.Message}");
+            }
+        }
+
+        [HttpPut]
+        [Route("[action]")]
         public async Task<IActionResult> UpdateUser(long userId, [FromBody] User user)
         {
             try
@@ -58,7 +81,7 @@ namespace API.Controllers
 
                 await _userRepository.UpdateUserAsync(user);
 
-                return NoContent();
+                return Ok();
             }
             catch (Exception ex)
             {

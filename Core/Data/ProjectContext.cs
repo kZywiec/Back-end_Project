@@ -39,7 +39,20 @@ namespace Core.Data
             modelBuilder.Entity<User>().HasData(
                 new User("admin", "admin", UserRole.Admin) { Id = 1},
                 new User("user", "user", UserRole.User) { Id = 2 },
-                new User("guest", "guest", UserRole.Guest) { Id = 3 }
+                new User("user2", "user2", UserRole.User) { Id = 3 },
+                new User("guest", "guest", UserRole.Guest) { Id = 4 }
+                );
+
+            modelBuilder.Entity<Document>().HasData(
+                new Document("Public", "pdf", "This's the public test file", 2, DocumentAccessStatus.Public) { Id = 1 },
+                new Document("Private", "pdf", "This's the private test file", 2, DocumentAccessStatus.Private) { Id = 2 },
+                new Document("Confidential", "pdf", "This's the confidential test file", 2, DocumentAccessStatus.Confidential) { Id = 3 }
+                );
+
+            modelBuilder.Entity<Log>().HasData(
+                new Log(ActionLog.Upload, 2, 1) { Id = 1 },
+                new Log(ActionLog.Upload, 2, 2) { Id = 2 },
+                new Log(ActionLog.Upload, 2, 3) { Id = 3 }
                 );
 
             base.OnModelCreating(modelBuilder);
