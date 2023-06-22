@@ -14,7 +14,10 @@ namespace Core.Entities.LogEntities
         }
 
         public ActionLog LogType { get; set; }
+        public long AuthorId { get; set; }
         public User Author { get; set; }
+
+        public long DocumentId { get; set; }
         public Document Document { get; set; }
     }
 }

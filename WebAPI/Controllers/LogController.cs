@@ -25,6 +25,11 @@ namespace YourNamespace.Controllers
 
         [HttpGet]
         [Route("[action]")]
+        public async Task<IActionResult> GetAllLogs()
+            =>Ok(await _logRepository.GetAllAsync());
+
+        [HttpGet]
+        [Route("[action]")]
         public async Task<IActionResult> GetLogById(long id)
         {
             try
@@ -67,22 +72,22 @@ namespace YourNamespace.Controllers
             return Ok(logs);
         }
 
-        [HttpPost]
-        [Route("[action]")]
-        public async Task<IActionResult> AddLog(Log log)
-        {
-            try
-            {
-                // Dodaj log do repozytorium logów
-                await _logRepository.AddLogAsync(log);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                // Jeśli wystąpił wyjątek, zwróć odpowiedź "bad request" wraz z wiadomością z wyjątku
-                return BadRequest(ex.Message);
-            }
-        }
+        //[HttpPost]
+        //[Route("[action]")]
+        //public async Task<IActionResult> AddLog(Log log)
+        //{
+        //    try
+        //    {
+        //        // Dodaj log do repozytorium logów
+        //        await _logRepository.AddLogAsync(log);
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Jeśli wystąpił wyjątek, zwróć odpowiedź "bad request" wraz z wiadomością z wyjątku
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
         [HttpDelete]
         [Route("[action]")]

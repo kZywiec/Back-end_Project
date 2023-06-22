@@ -13,12 +13,14 @@ namespace Core.Repositories
     public class DocumentRepository
     {
         private readonly ProjectContext _context;
+        private readonly UserRepository _userRepository;
         private readonly LogRepository _logRepository;
 
-        public DocumentRepository(ProjectContext context, LogRepository logRepository)
+        public DocumentRepository(UserRepository userRepository, LogRepository logRepository, ProjectContext projectContext)
         {
-            _context = context;
+            _userRepository = userRepository;
             _logRepository = logRepository;
+            _context = projectContext;
         }
 
         /// <summary>
@@ -52,14 +54,16 @@ namespace Core.Repositories
         /// </summary>
         /// <param name="user">The user.</param>
         /// <returns>The list of accessible documents.</returns>
-        public async Task<List<Document>> GetAccessibleDocumentsAsync(User user)
-        {
-            return await _context.Documents
-                .Where(d => d.AccessStatus == DocumentAccessStatus.Public
-                            || d.Uploader.Id == user.Id
-                            || user.Role == UserRole.Admin)
-                .ToListAsync();
-        }
+public async Task<List<Document>> GetAccessibleDocumentsAsync(User user)
+{
+    if (user.Role == UserRole.Admin)
+        return await _context.Documents.ToListAsync();
+
+    return await _context.Documents
+        .Where(d => d.AccessStatus == DocumentAccessStatus.Public || d.Uploader.Id == user.Id)
+        .ToListAsync();
+}
+
 
         /// <summary>
         /// Retrieves a document by its ID.
@@ -106,7 +110,7 @@ namespace Core.Repositories
         public async Task DeleteDocumentAsync(Document document)
         {
             Log log = new Log();
-            log.Author = document.Uploader;
+            log.Author = await _userRepository.GetUserByIdAsync(document.UploaderId);
 
             log.Document = document;
             log.LogType = ActionLog.Edit;

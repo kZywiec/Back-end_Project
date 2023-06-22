@@ -9,19 +9,16 @@ namespace API.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly AuthenticationService _authenticationService;
-        private readonly TokenService _tokenService;
 
-        public AuthenticationController(AuthenticationService authenticationService, TokenService tokenService)
+        public AuthenticationController(AuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
-            _tokenService = tokenService;
         }
 
-        [HttpPost]
-        [Route("[action]")]
-        public IActionResult Register(string username, string password)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Register(string username, string password)
         {
-            _authenticationService.Register(username, password);
+            await _authenticationService.RegisterAsync(username, password);
             return Ok();
         }
 
@@ -29,15 +26,8 @@ namespace API.Controllers
         [Route("[action]")]
         public IActionResult Login(string username, string password)
         {
-            User user = _authenticationService.Login(username, password);
-            if (user != null)
-            {
-                // Generate and return authentication token
-                string token = _tokenService.GenerateToken(user.Id);
-                return Ok(new { Token = token });
-            }
-
-            return Unauthorized();
+            _authenticationService.Login(username, password);
+            return _authenticationService.IsUserLogged() ? Ok() : Unauthorized();
         }
     }
 }

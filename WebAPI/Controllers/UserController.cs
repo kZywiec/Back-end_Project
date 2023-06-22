@@ -17,13 +17,13 @@ namespace API.Controllers
             _userRepository = userRepository;
         }
 
-        [HttpPost]
-        [Route("[action]")]
-        public async Task<IActionResult> AddUser(User user)
-        {
-            await _userRepository.AddUserAsync(user);
-            return Ok();
-        }
+        //[HttpPost]
+        //[Route("[action]")]
+        //public async Task<IActionResult> AddUser(User user)
+        //{
+        //    await _userRepository.AddUserAsync(user);
+        //    return Ok();
+        //}
 
         [HttpGet]
         [Route("[action]")]

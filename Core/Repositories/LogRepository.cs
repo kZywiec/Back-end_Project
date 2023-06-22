@@ -4,6 +4,7 @@ using Core.Entities.DocumentEntities;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Core.Repositories
 {
@@ -14,6 +15,18 @@ namespace Core.Repositories
         public LogRepository(ProjectContext context)
         {
             _context = context;
+        }
+
+        /// <summary>
+        /// Pobiera wszystkie logi.
+        /// </summary>
+        /// <returns>List<Log></returns>
+        public async Task<List<Log>> GetAllAsync()
+        {
+            var logs = await _context.Logs.ToListAsync();
+            if (!logs.Any())
+                throw new Exception ("Nie znalezione logów");
+            return await _context.Logs.ToListAsync();
         }
 
         /// <summary>
