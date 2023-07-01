@@ -10,13 +10,13 @@ namespace YourNamespace.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LogController : ControllerBase
+    public class LogsController : ControllerBase
     {
         private readonly LogRepository _logRepository;
         private readonly UserRepository _userRepository;
         private readonly DocumentRepository _documentRepository;
 
-        public LogController(LogRepository logRepository, UserRepository userRepository, DocumentRepository documentRepository)
+        public LogsController(LogRepository logRepository, UserRepository userRepository, DocumentRepository documentRepository)
         {
             _logRepository = logRepository;
             _userRepository = userRepository;
@@ -24,12 +24,11 @@ namespace YourNamespace.Controllers
         }
 
         [HttpGet]
-        [Route("[action]")]
         public async Task<IActionResult> GetAllLogs()
             =>Ok(await _logRepository.GetAllAsync());
 
         [HttpGet]
-        [Route("[action]")]
+        [Route("{id?}")]
         public async Task<IActionResult> GetLogById(long id)
         {
             try
@@ -51,7 +50,7 @@ namespace YourNamespace.Controllers
         }
 
         [HttpGet]
-        [Route("[action]")]
+        [Route("{userId?}")]
         public async Task<IActionResult> GetLogByUserId(long authorId)
         {
             // Pobierz użytkownika o podanym ID z repozytorium użytkowników
@@ -62,7 +61,7 @@ namespace YourNamespace.Controllers
         }
 
         [HttpGet]
-        [Route("[action]")]
+        [Route("{documentId?}")]
         public async Task<IActionResult> GetLogByDocumentId(long documentId)
         {
             // Pobierz dokument o podanym ID z repozytorium dokumentów
@@ -90,7 +89,7 @@ namespace YourNamespace.Controllers
         //}
 
         [HttpDelete]
-        [Route("[action]")]
+        [Route("{id?}")]
         public async Task<IActionResult> DeleteLog(long id)
         {
             try

@@ -8,11 +8,11 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly UserRepository _userRepository;
 
-        public UserController(UserRepository userRepository)
+        public UsersController(UserRepository userRepository)
         {
             _userRepository = userRepository;
         }
@@ -26,7 +26,6 @@ namespace API.Controllers
         //}
 
         [HttpGet]
-        [Route("[action]")]
         public async Task<IActionResult> GetAllUsers()
         {
             List<User> users = await _userRepository.GetAllUsersAsync();
@@ -34,7 +33,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("[action]")]
+        [Route("{id?}")]
         public async Task<IActionResult> GetUserById(long userId)
         {
             User user = await _userRepository.GetUserByIdAsync(userId);
@@ -45,8 +44,8 @@ namespace API.Controllers
             return NotFound();
         }
 
-        [HttpPut]
-        [Route("[action]")]
+        [HttpPatch]
+        [Route("{id?}")]
         public async Task<IActionResult> ChangeUserRole(long userId, UserRole userRole)
         {
             try
@@ -69,7 +68,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Route("[action]")]
+        [Route("{id?}")]
         public async Task<IActionResult> UpdateUser(long userId, [FromBody] User user)
         {
             try
@@ -91,7 +90,7 @@ namespace API.Controllers
 
 
         [HttpDelete]
-        [Route("[action]")]
+        [Route("{id?}")]
         public async Task<IActionResult> DeleteUser(long userId)
         {
             User user = await _userRepository.GetUserByIdAsync(userId);

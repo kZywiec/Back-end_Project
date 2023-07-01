@@ -9,19 +9,18 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class DocumentController : ControllerBase
+    public class DocumentsController : ControllerBase
     {
         private readonly DocumentRepository _documentRepository;
         private readonly UserRepository _userRepository;
 
-        public DocumentController(DocumentRepository documentRepository, UserRepository userRepository)
+        public DocumentsController(DocumentRepository documentRepository, UserRepository userRepository)
         {
             _documentRepository = documentRepository;
             _userRepository = userRepository;
         }
 
         [HttpPost]
-        [Route("[action]")]
         public async Task<IActionResult> AddDocument(string title, string filetype, string description, DocumentAccessStatus accessStatus, long userId)
         {
             Document document = new(title,filetype,description,userId,accessStatus);
@@ -31,23 +30,25 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("[action]")]
         public async Task<IActionResult> GetAllDocuments()
         {
             List<Document> Documents = await _documentRepository.GetAllDocumentsAsync();
             return Ok(Documents);
         }
 
-        [HttpGet]
-        [Route("[action]")]
-        public async Task<IActionResult> GetPublicDocuments()
-        {
-            List<Core.Entities.DocumentEntities.Document> publicDocuments = await _documentRepository.GetPublicDocumentsAsync();
-            return Ok(publicDocuments);
-        }
+        // Tutaj pojawia się pbroblem z powodu braku indywidualnej ściażki.
+        // Wrazie potrzebu zdefinuje się ścieżkę. Albo można całość przerobić na wyszukiwanie po dostępności
+
+        //[HttpGet]
+        //[Route("[action]")]
+        //public async Task<IActionResult> GetPublicDocuments()
+        //{
+        //    List<Core.Entities.DocumentEntities.Document> publicDocuments = await _documentRepository.GetPublicDocumentsAsync();
+        //    return Ok(publicDocuments);
+        //}
 
         [HttpGet]
-        [Route("[action]")]
+        [Route("{userId?}")]
         public async Task<IActionResult> GetAccessibleDocuments(long userId)
         {
             User user = await _userRepository.GetUserByIdAsync(userId);
@@ -56,7 +57,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("[action]")]
+        [Route("{id?}")]
         public async Task<IActionResult> GetDocumentById(long documentId)
         {
             Document document = await _documentRepository.GetDocumentByIdAsync(documentId);
@@ -67,8 +68,8 @@ namespace API.Controllers
             return NotFound();
         }
 
-        [HttpPut]
-        [Route("[action]")]
+        [HttpPatch]
+        [Route("{id?}")]
         public async Task<IActionResult> ChangeDocumentAccess(long documentId, DocumentAccessStatus documentAccessStatus)
         {
             Document existingDocument = await _documentRepository.GetDocumentByIdAsync(documentId);
@@ -82,7 +83,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Route("[action]")]
+        [Route("{id?}")]
         public async Task<IActionResult> UpdateDocument(long documentId, Document document)
         {
             Document existingDocument = await _documentRepository.GetDocumentByIdAsync(documentId);
@@ -104,7 +105,7 @@ namespace API.Controllers
         }
 
         [HttpDelete]
-        [Route("[action]")]
+        [Route("{id?}")]
         public async Task<IActionResult> DeleteDocument(long documentId)
         {
             Document document = await _documentRepository.GetDocumentByIdAsync(documentId);
